@@ -1,0 +1,26 @@
+{
+  "name": "paper-trading-backend",
+  "version": "1.0.0",
+  "description": "Real-time paper trading platform API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node prisma/seed.js",
+    "db:setup": "prisma db push && node prisma/seed.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "prisma": "^5.22.0",
+    "@prisma/client": "^5.22.0",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
