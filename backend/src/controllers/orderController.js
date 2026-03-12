@@ -17,14 +17,17 @@ async function createOrder(req, res) {
     }
 
     const { order, price } = await orderService.placeOrder(userId, symbol, upperType, qty);
-    res.status(201).json({
+    const payload = {
       id: order.id,
       symbol: symbol.toUpperCase(),
       type: upperType,
       quantity: qty,
       price,
       status: order.status,
-    });
+    };
+    const io = req.app.get('io');
+    if (io) io.emit('trade_update', payload);
+    res.status(201).json(payload);
   } catch (err) {
     if (err.message === 'Stock not found' || err.message === 'User not found') {
       return res.status(404).json({ error: err.message });

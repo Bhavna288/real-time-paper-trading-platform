@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchStockBySymbol } from '../api/stocks';
 import OrderForm from '../components/OrderForm';
+import { useSocket } from '../context/SocketContext';
 
 export default function StockDetail() {
   const { symbol } = useParams();
   const [stock, setStock] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { priceUpdates } = useSocket();
+
+  const livePrice = useMemo(() => {
+    const u = priceUpdates.find((p) => p.symbol === symbol?.toUpperCase());
+    return u ? u.currentPrice : null;
+  }, [priceUpdates, symbol]);
 
   useEffect(() => {
     if (!symbol) return;
@@ -21,6 +28,8 @@ export default function StockDetail() {
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
   if (!stock) return null;
 
+  const displayPrice = livePrice ?? stock.currentPrice;
+
   return (
     <div className="p-6">
       <Link to="/" className="mb-4 inline-block text-sm text-blue-600 hover:underline">
@@ -30,13 +39,13 @@ export default function StockDetail() {
         <h2 className="text-2xl font-semibold text-gray-800">{stock.symbol}</h2>
         <p className="mt-1 text-gray-600">{stock.name}</p>
         <p className="mt-4 text-3xl font-bold text-gray-900">
-          ${Number(stock.currentPrice).toFixed(2)}
+          ${Number(displayPrice).toFixed(2)}
         </p>
       </div>
       <div className="mt-6 max-w-sm">
         <OrderForm
           symbol={stock.symbol}
-          currentPrice={stock.currentPrice}
+          currentPrice={displayPrice}
         />
       </div>
     </div>

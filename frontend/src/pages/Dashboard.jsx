@@ -1,11 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { fetchStocks } from '../api/stocks';
 import { Link } from 'react-router-dom';
+import { useSocket } from '../context/SocketContext';
 
 export default function Dashboard() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { priceUpdates } = useSocket();
+
+  const priceBySymbol = useMemo(() => {
+    const map = {};
+    priceUpdates.forEach((u) => { map[u.symbol] = u.currentPrice; });
+    return map;
+  }, [priceUpdates]);
 
   useEffect(() => {
     fetchStocks()
@@ -35,7 +43,7 @@ export default function Dashboard() {
               <tr key={s.id}>
                 <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">{s.symbol}</td>
                 <td className="px-4 py-3 text-gray-600">{s.name}</td>
-                <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">${Number(s.currentPrice).toFixed(2)}</td>
+                <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">${Number(priceBySymbol[s.symbol] ?? s.currentPrice).toFixed(2)}</td>
                 <td className="px-4 py-3">
                   <Link to={`/stocks/${s.symbol}`} className="text-sm text-blue-600 hover:underline">
                     View
