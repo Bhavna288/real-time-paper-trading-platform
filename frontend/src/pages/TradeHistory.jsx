@@ -14,44 +14,44 @@ export default function TradeHistory() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="p-6 text-gray-600">Loading trades...</p>;
+  if (loading) return <p className="p-6 text-slate-600">Loading trades...</p>;
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
 
   return (
     <div className="p-6">
-      <h2 className="mb-4 text-xl font-semibold text-gray-800">Trade History</h2>
+      <h2 className="mb-4 text-xl font-semibold text-slate-800">Trade History</h2>
       {trades.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-4 text-gray-500">No trades yet. Place an order from a stock detail page.</p>
+        <p className="rounded-xl border border-primary-100 bg-white p-4 text-slate-500">No trades yet. Place an order from a stock detail page.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-primary-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Symbol</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Side</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">Quantity</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">Price</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Symbol</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Side</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Quantity</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Price</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-100">
               {trades.map((t) => (
-                <tr key={t.id}>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                <tr key={t.id} className="hover:bg-slate-50/50">
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600">
                     {new Date(t.createdAt).toLocaleString()}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
-                    <Link to={`/stocks/${t.symbol}`} className="text-blue-600 hover:underline">
+                  <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">
+                    <Link to={`/stocks/${t.symbol}`} className="text-primary-600 hover:text-primary-700">
                       {t.symbol}
                     </Link>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3">
-                    <span className={t.side === 'BUY' ? 'text-green-600' : 'text-red-600'}>
+                    <span className={t.side === 'BUY' ? 'text-emerald-600' : 'text-red-600'}>
                       {t.side}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">{t.quantity}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">{t.quantity}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">
                     ${Number(t.price).toFixed(2)}
                   </td>
                 </tr>

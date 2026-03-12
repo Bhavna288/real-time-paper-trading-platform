@@ -35,12 +35,12 @@ export default function Toast() {
     const isBuy = orderType === 'BUY';
     return (
       <div
-        className="fixed bottom-6 right-6 z-50 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-lg"
+        className="fixed bottom-6 right-6 z-50 rounded-xl border border-primary-200 bg-white px-4 py-3 shadow-lg"
         role="alert"
       >
-        <p className="font-medium text-gray-900">Order filled</p>
-        <p className="text-sm text-gray-600">
-          <span className={isBuy ? 'text-green-600' : 'text-red-600'}>{orderType}</span>
+        <p className="font-medium text-slate-900">Order filled</p>
+        <p className="text-sm text-slate-600">
+          <span className={isBuy ? 'text-emerald-600' : 'text-red-600'}>{orderType}</span>
           {' '}{quantity} {symbol} @ ${Number(price).toFixed(2)}
         </p>
       </div>
@@ -52,11 +52,11 @@ export default function Toast() {
     const label = direction === 'ABOVE' ? 'reached' : 'fell to';
     return (
       <div
-        className="fixed bottom-6 right-6 z-50 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-lg"
+        className="fixed bottom-6 right-6 z-50 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-lg"
         role="alert"
       >
-        <p className="font-medium text-gray-900">Price alert</p>
-        <p className="text-sm text-gray-600">
+        <p className="font-medium text-slate-900">Price alert</p>
+        <p className="text-sm text-slate-600">
           {symbol} {label} ${Number(currentPrice).toFixed(2)} (target ${Number(targetPrice).toFixed(2)})
         </p>
       </div>

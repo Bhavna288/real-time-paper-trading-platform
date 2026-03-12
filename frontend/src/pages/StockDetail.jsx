@@ -76,19 +76,19 @@ export default function StockDetail() {
   const chartData = chartRange === 'live' ? priceHistory : historicalData;
   const chartTitle = chartRange === 'live' ? 'Live price' : CHART_RANGES.find((r) => r.value === chartRange)?.label ?? 'Price';
 
-  if (loading) return <p className="p-6 text-gray-600">Loading...</p>;
+  if (loading) return <p className="p-6 text-slate-600">Loading...</p>;
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
   if (!stock) return null;
 
   return (
     <div className="p-6">
-      <Link to="/" className="mb-4 inline-block text-sm text-blue-600 hover:underline">
+      <Link to="/" className="mb-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
         ← Back to Dashboard
       </Link>
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold text-gray-800">{stock.symbol}</h2>
-        <p className="mt-1 text-gray-600">{stock.name}</p>
-        <p className="mt-4 text-3xl font-bold text-gray-900">
+      <div className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-800">{stock.symbol}</h2>
+        <p className="mt-1 text-slate-600">{stock.name}</p>
+        <p className="mt-4 text-3xl font-bold text-slate-900">
           ${Number(displayPrice).toFixed(2)}
         </p>
       </div>
@@ -98,10 +98,10 @@ export default function StockDetail() {
             key={r.value}
             type="button"
             onClick={() => setChartRange(r.value)}
-            className={`rounded px-3 py-1.5 text-sm font-medium ${
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
               chartRange === r.value
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary-600 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
             {r.label}
@@ -111,9 +111,9 @@ export default function StockDetail() {
       {chartRange === 'live' ? (
         <LivePriceChart data={chartData} title={chartTitle} />
       ) : historyLoading ? (
-        <p className="mt-4 text-gray-500">Loading chart...</p>
+        <p className="mt-4 text-slate-500">Loading chart...</p>
       ) : chartData.length === 0 ? (
-        <p className="mt-4 text-gray-500">No historical data for this range.</p>
+        <p className="mt-4 text-slate-500">No historical data for this range.</p>
       ) : (
         <LivePriceChart data={chartData} title={chartTitle} />
       )}
@@ -128,16 +128,16 @@ export default function StockDetail() {
       </div>
 
       {stockTrades.length > 0 && (
-        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-          <h3 className="mb-3 text-sm font-medium text-gray-700">Recent trades ({stock.symbol})</h3>
+        <div className="mt-6 rounded-xl border border-primary-100 bg-white p-4 shadow-sm">
+          <h3 className="mb-3 text-sm font-medium text-slate-700">Recent trades ({stock.symbol})</h3>
           <ul className="space-y-1.5 text-sm">
             {stockTrades.slice(0, 10).map((t) => (
-              <li key={t.id} className="flex justify-between text-gray-700">
+              <li key={t.id} className="flex justify-between text-slate-700">
                 <span>
-                  <span className={t.side === 'BUY' ? 'text-green-600' : 'text-red-600'}>{t.side}</span>
+                  <span className={t.side === 'BUY' ? 'text-emerald-600' : 'text-red-600'}>{t.side}</span>
                   {' '}{t.quantity} @ ${Number(t.price).toFixed(2)}
                 </span>
-                <span className="text-gray-500">
+                <span className="text-slate-500">
                   {new Date(t.createdAt).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
                 </span>
               </li>

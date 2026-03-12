@@ -52,21 +52,21 @@ export default function Watchlist() {
     }
   }
 
-  if (loading && items.length === 0) return <p className="p-6 text-gray-600">Loading watchlist...</p>;
+  if (loading && items.length === 0) return <p className="p-6 text-slate-600">Loading watchlist...</p>;
   if (error && items.length === 0) return <p className="p-6 text-red-600">Error: {error}</p>;
 
   return (
     <div className="p-6">
-      <h2 className="mb-4 text-xl font-semibold text-gray-800">Watchlist</h2>
+      <h2 className="mb-4 text-xl font-semibold text-slate-800">Watchlist</h2>
 
       <form onSubmit={handleAdd} className="mb-6 flex flex-wrap items-end gap-2">
         <div>
-          <label htmlFor="add-symbol" className="mb-1 block text-sm text-gray-600">Add symbol</label>
+          <label htmlFor="add-symbol" className="mb-1 block text-sm text-slate-600">Add symbol</label>
           <select
             id="add-symbol"
             value={addSymbol}
             onChange={(e) => setAddSymbol(e.target.value)}
-            className="rounded border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
           >
             <option value="">Select...</option>
             {SYMBOLS.filter((s) => !items.some((i) => i.symbol === s)).map((s) => (
@@ -77,7 +77,7 @@ export default function Watchlist() {
         <button
           type="submit"
           disabled={!addSymbol}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-primary-600 px-4 py-2 font-medium text-white hover:bg-primary-700 disabled:opacity-50"
         >
           Add
         </button>
@@ -85,40 +85,40 @@ export default function Watchlist() {
       </form>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-4 text-gray-500">No symbols in watchlist. Add one above.</p>
+        <p className="rounded-xl border border-primary-100 bg-white p-4 text-slate-500">No symbols in watchlist. Add one above.</p>
       ) : (
-        <>
-          <div className="mb-1 flex items-center justify-between rounded-t border border-b-0 border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-600">
+        <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+          <div className="flex items-center justify-between bg-primary-50 px-4 py-2 text-sm font-medium text-slate-600">
             <span>Symbol</span>
             <span>Price</span>
             <span className="w-14" aria-hidden />
           </div>
-          <ul className="space-y-2">
-          {items.map((item) => {
-            const price = priceBySymbol[item.symbol] ?? item.currentPrice;
-            return (
-              <li
-                key={item.id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3"
-              >
-                <Link to={`/stocks/${item.symbol}`} className="font-medium text-blue-600 hover:underline">
-                  {item.symbol}
-                </Link>
-                <span className="text-gray-700 tabular-nums">
-                  {price != null ? `$${Number(price).toFixed(2)}` : '—'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(item.symbol)}
-                  className="text-sm text-red-600 hover:underline"
+          <ul className="divide-y divide-slate-100">
+            {items.map((item) => {
+              const price = priceBySymbol[item.symbol] ?? item.currentPrice;
+              return (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/50"
                 >
-                  Remove
-                </button>
-              </li>
-            );
-          })}
+                  <Link to={`/stocks/${item.symbol}`} className="font-medium text-primary-600 hover:text-primary-700">
+                    {item.symbol}
+                  </Link>
+                  <span className="tabular-nums text-slate-700">
+                    {price != null ? `$${Number(price).toFixed(2)}` : '—'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(item.symbol)}
+                    className="text-sm text-red-600 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </li>
+              );
+            })}
           </ul>
-        </>
+        </div>
       )}
     </div>
   );

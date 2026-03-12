@@ -14,48 +14,48 @@ export default function OrderHistory() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="p-6 text-gray-600">Loading orders...</p>;
+  if (loading) return <p className="p-6 text-slate-600">Loading orders...</p>;
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
 
   return (
     <div className="p-6">
-      <h2 className="mb-4 text-xl font-semibold text-gray-800">Order History</h2>
+      <h2 className="mb-4 text-xl font-semibold text-slate-800">Order History</h2>
       {orders.length === 0 ? (
-        <p className="rounded-lg border border-gray-200 bg-white p-4 text-gray-500">No orders yet. Place an order from a stock detail page.</p>
+        <p className="rounded-xl border border-primary-100 bg-white p-4 text-slate-500">No orders yet. Place an order from a stock detail page.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-primary-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Symbol</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Type</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">Quantity</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Symbol</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Type</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Quantity</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Price</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-100">
               {orders.map((o) => (
-                <tr key={o.id}>
-                  <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                <tr key={o.id} className="hover:bg-slate-50/50">
+                  <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600">
                     {new Date(o.createdAt).toLocaleString()}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
-                    <Link to={`/stocks/${o.symbol}`} className="text-blue-600 hover:underline">
+                  <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">
+                    <Link to={`/stocks/${o.symbol}`} className="text-primary-600 hover:text-primary-700">
                       {o.symbol}
                     </Link>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3">
-                    <span className={o.type === 'BUY' ? 'text-green-600' : 'text-red-600'}>
+                    <span className={o.type === 'BUY' ? 'text-emerald-600' : 'text-red-600'}>
                       {o.type}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">{o.quantity}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">{o.quantity}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">
                     ${Number(o.price).toFixed(2)}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-gray-600">{o.status}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">{o.status}</td>
                 </tr>
               ))}
             </tbody>

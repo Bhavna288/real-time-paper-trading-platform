@@ -33,29 +33,29 @@ export default function OrderForm({ symbol, currentPrice, onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-gray-200 bg-white p-4">
-      <h3 className="mb-3 text-lg font-medium text-gray-800">Place order</h3>
+    <form onSubmit={handleSubmit} className="rounded-xl border border-primary-100 bg-white p-4 shadow-sm">
+      <h3 className="mb-3 text-lg font-medium text-slate-800">Place order</h3>
       {currentPrice != null && (
-        <p className="mb-3 text-sm text-gray-600">Current price: ${Number(currentPrice).toFixed(2)}</p>
+        <p className="mb-3 text-sm text-slate-600">Current price: ${Number(currentPrice).toFixed(2)}</p>
       )}
       <div className="mb-3 flex gap-2">
         <button
           type="button"
           onClick={() => setType('BUY')}
-          className={`rounded px-3 py-1.5 text-sm font-medium ${type === 'BUY' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+          className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${type === 'BUY' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}
         >
           Buy
         </button>
         <button
           type="button"
           onClick={() => setType('SELL')}
-          className={`rounded px-3 py-1.5 text-sm font-medium ${type === 'SELL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+          className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${type === 'SELL' ? 'bg-red-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}`}
         >
           Sell
         </button>
       </div>
       <div className="mb-3">
-        <label htmlFor="qty" className="mb-1 block text-sm text-gray-600">Quantity</label>
+        <label htmlFor="qty" className="mb-1 block text-sm text-slate-600">Quantity</label>
         <input
           id="qty"
           type="number"
@@ -63,17 +63,17 @@ export default function OrderForm({ symbol, currentPrice, onSuccess }) {
           step="1"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
           disabled={loading}
         />
       </div>
       {message && (
-        <p className={`mb-3 text-sm ${isError ? 'text-red-600' : 'text-green-600'}`}>{message}</p>
+        <p className={`mb-3 text-sm ${isError ? 'text-red-600' : 'text-emerald-600'}`}>{message}</p>
       )}
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-lg bg-primary-600 px-4 py-2 font-medium text-white hover:bg-primary-700 disabled:opacity-50"
       >
         {loading ? 'Placing...' : `Place ${type} order`}
       </button>
