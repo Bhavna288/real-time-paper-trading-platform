@@ -25,7 +25,30 @@ async function getStockBySymbol(symbol) {
   };
 }
 
+function getOrderbook(stock) {
+  const price = Number(stock.currentPrice);
+  const spread = price * 0.002;
+  const bids = [];
+  const asks = [];
+  for (let i = 5; i >= 1; i--) {
+    bids.push({ price: Math.round((price - spread * i) * 100) / 100, quantity: 100 * i });
+  }
+  for (let i = 1; i <= 5; i++) {
+    asks.push({ price: Math.round((price + spread * i) * 100) / 100, quantity: 100 * i });
+  }
+  return { symbol: stock.symbol, bids, asks };
+}
+
+async function getOrderbookBySymbol(symbol) {
+  const stock = await prisma.stock.findUnique({
+    where: { symbol: symbol.toUpperCase() },
+  });
+  if (!stock) return null;
+  return getOrderbook(stock);
+}
+
 module.exports = {
   getAllStocks,
   getStockBySymbol,
+  getOrderbookBySymbol,
 };

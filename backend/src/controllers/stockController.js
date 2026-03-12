@@ -22,7 +22,21 @@ async function getStockBySymbol(req, res) {
   }
 }
 
+async function getOrderbook(req, res) {
+  try {
+    const { symbol } = req.params;
+    const orderbook = await stockService.getOrderbookBySymbol(symbol);
+    if (!orderbook) {
+      return res.status(404).json({ error: 'Stock not found' });
+    }
+    res.json(orderbook);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orderbook' });
+  }
+}
+
 module.exports = {
   getStocks,
   getStockBySymbol,
+  getOrderbook,
 };
