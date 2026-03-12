@@ -29,9 +29,21 @@ model Stock {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  orders       Order[]
-  holdings     Holding[]
-  trades       Trade[]
+  orders        Order[]
+  holdings      Holding[]
+  trades        Trade[]
+  priceHistory  StockPrice[]
+}
+
+model StockPrice {
+  id        String   @id @default(cuid())
+  stockId   String
+  price     Decimal  @db.Decimal(18, 2)
+  timestamp DateTime @default(now())
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@index([stockId, timestamp])
 }
 
 model Order {

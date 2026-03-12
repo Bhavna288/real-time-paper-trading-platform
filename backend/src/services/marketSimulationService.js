@@ -2,6 +2,7 @@ const { prisma } = require('../config/database');
 
 const MAX_CHANGE_PERCENT = 0.005; // ±0.5% per step
 const MIN_PRICE = 0.01;
+const PRICE_HISTORY_RETENTION_DAYS = 90; // delete rows older than this
 
 function randomDelta() {
   return (Math.random() * 2 - 1) * MAX_CHANGE_PERCENT;
@@ -21,10 +22,25 @@ async function runSimulationStep() {
       where: { id: stock.id },
       data: { currentPrice: newPrice },
     });
+
+    await prisma.stockPrice.create({
+      data: { stockId: stock.id, price: newPrice },
+    });
+
     updates.push({ symbol: stock.symbol, currentPrice: newPrice });
   }
 
+  await runRetention();
+
   return updates;
+}
+
+async function runRetention() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - PRICE_HISTORY_RETENTION_DAYS);
+  await prisma.stockPrice.deleteMany({
+    where: { timestamp: { lt: cutoff } },
+  });
 }
 
 function startSimulation(intervalMs, onUpdate) {
