@@ -3,6 +3,7 @@ import Dashboard from './pages/Dashboard';
 import StockDetail from './pages/StockDetail';
 import Portfolio from './pages/Portfolio';
 import Watchlist from './pages/Watchlist';
+import TradeHistory from './pages/TradeHistory';
 
 function App() {
   return (
@@ -22,12 +23,16 @@ function App() {
             <Link to="/watchlist" className="text-sm text-gray-600 hover:text-gray-900">
               Watchlist
             </Link>
+            <Link to="/trades" className="text-sm text-gray-600 hover:text-gray-900">
+              Trade History
+            </Link>
           </div>
         </nav>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/trades" element={<TradeHistory />} />
           <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
       </div>
