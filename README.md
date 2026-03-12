@@ -109,5 +109,14 @@ The app uses a single seeded demo user:
 - **Portfolio** – Cash balance, holdings value, total portfolio value, unrealized P&amp;L, holdings table
 - **Watchlist** – Add/remove symbols (AAPL, MSFT, NVDA, TSLA, AMZN)
 - **Orders** – Place buy/sell orders at current simulated price; portfolio and holdings update
+- **Real-time** – Live price updates on Dashboard and Stock Detail via WebSockets; trade notifications when orders fill
 
-Real-time price updates and trade notifications (WebSockets) can be added in a later version.
+---
+
+## Real-time (WebSockets)
+
+- **Market simulation** – The backend runs a simulation every 5 seconds that updates each stock’s price by a small random amount (±0.5%). Prices are stored in the database.
+- **Socket.io** – The server emits:
+  - **`price_update`** – After each simulation step (payload: array of `{ symbol, currentPrice }`). The frontend listens and updates prices on the Dashboard and Stock Detail pages without refresh.
+  - **`trade_update`** – When an order is filled (payload: order summary). The frontend receives it in `SocketContext` (e.g. for toasts or a live trade feed).
+- The frontend connects to the same origin in dev; Vite proxies `/socket.io` to the backend.
