@@ -61,15 +61,18 @@ model StockPriceDaily {
 }
 
 model Order {
-  id        String   @id @default(cuid())
-  userId    String
-  stockId   String
-  type      String   // BUY | SELL
-  quantity  Int
-  price     Decimal  @db.Decimal(18, 2)
-  status    String   @default("FILLED") // FILLED for this simulation
-  filledAt  DateTime @default(now())
-  createdAt DateTime @default(now())
+  id         String    @id @default(cuid())
+  userId     String
+  stockId    String
+  type       String    // BUY | SELL
+  quantity   Int
+  orderKind  String    @default("MARKET") // MARKET | LIMIT | STOP
+  price      Decimal   @db.Decimal(18, 2)  // execution price (0 when PENDING)
+  limitPrice Decimal?  @db.Decimal(18, 2)
+  stopPrice  Decimal?  @db.Decimal(18, 2)
+  status     String    @default("FILLED")  // PENDING | FILLED | CANCELLED
+  filledAt   DateTime?
+  createdAt  DateTime  @default(now())
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   stock  Stock  @relation(fields: [stockId], references: [id], onDelete: Cascade)
@@ -77,6 +80,7 @@ model Order {
 
   @@index([userId])
   @@index([stockId])
+  @@index([stockId, status])
 }
 
 model Holding {

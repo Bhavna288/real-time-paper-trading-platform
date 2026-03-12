@@ -19,10 +19,13 @@ const server = app.listen(PORT, async () => {
     });
     app.set('io', io);
 
-    startSimulation(SIMULATION_INTERVAL_MS, (updates, triggeredAlerts) => {
+    startSimulation(SIMULATION_INTERVAL_MS, (updates, triggeredAlerts, filledOrders) => {
       if (updates && updates.length > 0) io.emit('price_update', updates);
       if (triggeredAlerts && triggeredAlerts.length > 0) {
         triggeredAlerts.forEach((payload) => io.emit('price_alert', payload));
+      }
+      if (filledOrders && filledOrders.length > 0) {
+        filledOrders.forEach((payload) => io.emit('trade_update', { ...payload, type: payload.type }));
       }
     });
     console.log('Market simulation started (prices update every 5s)');

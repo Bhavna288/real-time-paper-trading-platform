@@ -29,9 +29,10 @@ export default function OrderHistory() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Date</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Symbol</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Kind</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Type</th>
                 <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Quantity</th>
-                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Price</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-slate-600">Price / Trigger</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-600">Status</th>
               </tr>
             </thead>
@@ -46,6 +47,7 @@ export default function OrderHistory() {
                       {o.symbol}
                     </Link>
                   </td>
+                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">{o.orderKind || 'MARKET'}</td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <span className={o.type === 'BUY' ? 'text-emerald-600' : 'text-red-600'}>
                       {o.type}
@@ -53,7 +55,13 @@ export default function OrderHistory() {
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">{o.quantity}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-right text-slate-900">
-                    ${Number(o.price).toFixed(2)}
+                    {o.status === 'FILLED'
+                      ? `$${Number(o.price).toFixed(2)}`
+                      : o.orderKind === 'LIMIT' && o.limitPrice != null
+                        ? `limit $${Number(o.limitPrice).toFixed(2)}`
+                        : o.orderKind === 'STOP' && o.stopPrice != null
+                          ? `stop $${Number(o.stopPrice).toFixed(2)}`
+                          : '—'}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">{o.status}</td>
                 </tr>

@@ -1,5 +1,6 @@
 const { prisma } = require('../config/database');
 const { getAndMarkTriggeredAlerts } = require('./alertService');
+const { processPendingOrdersForStock } = require('./orderService');
 
 const MAX_CHANGE_PERCENT = 0.005; // ±0.5% per step
 const MIN_PRICE = 0.01;
@@ -13,6 +14,7 @@ async function runSimulationStep() {
   const stocks = await prisma.stock.findMany();
   const updates = [];
   const triggeredAlerts = [];
+  const filledOrders = [];
 
   for (const stock of stocks) {
     const current = Number(stock.currentPrice);
@@ -33,11 +35,14 @@ async function runSimulationStep() {
 
     const triggered = await getAndMarkTriggeredAlerts(stock.symbol, newPrice);
     triggeredAlerts.push(...triggered);
+
+    const filled = await processPendingOrdersForStock(stock.id, newPrice);
+    filledOrders.push(...filled);
   }
 
   await runRetention();
 
-  return { updates, triggeredAlerts };
+  return { updates, triggeredAlerts, filledOrders };
 }
 
 async function runRetention() {
@@ -51,8 +56,8 @@ async function runRetention() {
 function startSimulation(intervalMs, onUpdate) {
   const run = async () => {
     try {
-      const { updates, triggeredAlerts } = await runSimulationStep();
-      if (onUpdate) onUpdate(updates, triggeredAlerts);
+      const { updates, triggeredAlerts, filledOrders } = await runSimulationStep();
+      if (onUpdate) onUpdate(updates, triggeredAlerts, filledOrders);
     } catch (err) {
       console.error('Market simulation step failed:', err.message);
     }
