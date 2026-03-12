@@ -7,17 +7,19 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [priceUpdates, setPriceUpdates] = useState([]);
   const [lastTrade, setLastTrade] = useState(null);
+  const [lastAlert, setLastAlert] = useState(null);
 
   useEffect(() => {
     const s = io(window.location.origin, { path: '/socket.io', transports: ['websocket', 'polling'] });
     setSocket(s);
     s.on('price_update', (updates) => setPriceUpdates(updates));
     s.on('trade_update', (payload) => setLastTrade(payload));
+    s.on('price_alert', (payload) => setLastAlert(payload));
     return () => s.disconnect();
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, priceUpdates, lastTrade }}>
+    <SocketContext.Provider value={{ socket, priceUpdates, lastTrade, lastAlert }}>
       {children}
     </SocketContext.Provider>
   );

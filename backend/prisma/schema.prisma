@@ -19,6 +19,7 @@ model User {
   holdings     Holding[]
   trades       Trade[]
   watchlist    WatchlistItem[]
+  priceAlerts  PriceAlert[]
 }
 
 model Stock {
@@ -108,4 +109,19 @@ model WatchlistItem {
 
   @@unique([userId, symbol])
   @@index([userId])
+}
+
+model PriceAlert {
+  id          String    @id @default(cuid())
+  userId      String
+  symbol      String
+  direction   String    // ABOVE | BELOW
+  targetPrice Decimal   @db.Decimal(18, 2)
+  createdAt   DateTime  @default(now())
+  triggeredAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([symbol])
 }
