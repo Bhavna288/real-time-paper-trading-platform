@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchStockBySymbol, fetchPriceHistory } from '../api/stocks';
+import { fetchStockBySymbol, fetchPriceHistory, fetchOrderbook, fetchStockTrades } from '../api/stocks';
 import OrderForm from '../components/OrderForm';
 import LivePriceChart from '../components/LivePriceChart';
+import OrderBook from '../components/OrderBook';
 import { useSocket } from '../context/SocketContext';
 
 const MAX_CHART_POINTS = 60;
@@ -22,6 +23,8 @@ export default function StockDetail() {
   const [chartRange, setChartRange] = useState('live');
   const [historicalData, setHistoricalData] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [orderbook, setOrderbook] = useState(null);
+  const [stockTrades, setStockTrades] = useState([]);
   const { priceUpdates } = useSocket();
 
   const livePrice = useMemo(() => {
@@ -62,6 +65,12 @@ export default function StockDetail() {
       .catch(() => setHistoricalData([]))
       .finally(() => setHistoryLoading(false));
   }, [symbol, chartRange]);
+
+  useEffect(() => {
+    if (!symbol) return;
+    fetchOrderbook(symbol).then(setOrderbook).catch(() => setOrderbook(null));
+    fetchStockTrades(symbol).then(setStockTrades).catch(() => setStockTrades([]));
+  }, [symbol]);
 
   const chartData = chartRange === 'live' ? priceHistory : historicalData;
   const chartTitle = chartRange === 'live' ? 'Live price' : CHART_RANGES.find((r) => r.value === chartRange)?.label ?? 'Price';
@@ -107,12 +116,34 @@ export default function StockDetail() {
       ) : (
         <LivePriceChart data={chartData} title={chartTitle} />
       )}
-      <div className="mt-6 max-w-sm">
-        <OrderForm
-          symbol={stock.symbol}
-          currentPrice={displayPrice}
-        />
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="max-w-sm">
+          <OrderForm
+            symbol={stock.symbol}
+            currentPrice={displayPrice}
+          />
+        </div>
+        <OrderBook orderbook={orderbook} />
       </div>
+
+      {stockTrades.length > 0 && (
+        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
+          <h3 className="mb-3 text-sm font-medium text-gray-700">Recent trades ({stock.symbol})</h3>
+          <ul className="space-y-1.5 text-sm">
+            {stockTrades.slice(0, 10).map((t) => (
+              <li key={t.id} className="flex justify-between text-gray-700">
+                <span>
+                  <span className={t.side === 'BUY' ? 'text-green-600' : 'text-red-600'}>{t.side}</span>
+                  {' '}{t.quantity} @ ${Number(t.price).toFixed(2)}
+                </span>
+                <span className="text-gray-500">
+                  {new Date(t.createdAt).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,3 +18,15 @@ export async function fetchPriceHistory(symbol, range) {
   if (!res.ok) throw new Error('Failed to fetch price history');
   return res.json();
 }
+
+export async function fetchOrderbook(symbol) {
+  const res = await fetch(`${BASE}/${encodeURIComponent(symbol)}/orderbook`);
+  if (!res.ok) throw new Error('Failed to fetch orderbook');
+  return res.json();
+}
+
+export async function fetchStockTrades(symbol) {
+  const res = await fetch(`${BASE}/${encodeURIComponent(symbol)}/trades`);
+  if (!res.ok) throw new Error('Failed to fetch trades');
+  return res.json();
+}
