@@ -39,4 +39,14 @@ async function createOrder(req, res) {
   }
 }
 
-module.exports = { createOrder };
+async function getOrders(req, res) {
+  try {
+    const { userId } = req.params;
+    const orders = await orderService.getOrdersByUser(userId);
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+}
+
+module.exports = { createOrder, getOrders };

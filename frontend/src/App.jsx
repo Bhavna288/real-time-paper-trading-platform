@@ -4,6 +4,7 @@ import StockDetail from './pages/StockDetail';
 import Portfolio from './pages/Portfolio';
 import Watchlist from './pages/Watchlist';
 import TradeHistory from './pages/TradeHistory';
+import OrderHistory from './pages/OrderHistory';
 import Toast from './components/Toast';
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
             <Link to="/trades" className="text-sm text-gray-600 hover:text-gray-900">
               Trade History
             </Link>
+            <Link to="/orders" className="text-sm text-gray-600 hover:text-gray-900">
+              Order History
+            </Link>
           </div>
         </nav>
         <Routes>
@@ -34,6 +38,7 @@ function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/trades" element={<TradeHistory />} />
+          <Route path="/orders" element={<OrderHistory />} />
           <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
         <Toast />

@@ -91,4 +91,22 @@ async function placeOrder(userId, symbol, type, quantity) {
   });
 }
 
-module.exports = { placeOrder };
+async function getOrdersByUser(userId) {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    include: { stock: true },
+    orderBy: { createdAt: 'desc' },
+  });
+  return orders.map((o) => ({
+    id: o.id,
+    symbol: o.stock.symbol,
+    type: o.type,
+    quantity: o.quantity,
+    price: Number(o.price),
+    status: o.status,
+    filledAt: o.filledAt,
+    createdAt: o.createdAt,
+  }));
+}
+
+module.exports = { placeOrder, getOrdersByUser };

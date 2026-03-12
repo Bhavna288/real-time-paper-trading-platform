@@ -2,10 +2,12 @@ const express = require('express');
 const portfolioController = require('../controllers/portfolioController');
 const watchlistController = require('../controllers/watchlistController');
 const tradeController = require('../controllers/tradeController');
+const orderController = require('../controllers/orderController');
 
 const router = express.Router();
 
 router.get('/:userId/portfolio', portfolioController.getPortfolio);
+router.get('/:userId/orders', orderController.getOrders);
 router.get('/:userId/holdings', portfolioController.getHoldings);
 router.get('/:userId/balance', portfolioController.getBalance);
 router.get('/:userId/watchlist', watchlistController.getWatchlist);
