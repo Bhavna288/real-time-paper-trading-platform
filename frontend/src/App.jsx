@@ -4,6 +4,7 @@ import StockDetail from './pages/StockDetail';
 import Portfolio from './pages/Portfolio';
 import Watchlist from './pages/Watchlist';
 import TradeHistory from './pages/TradeHistory';
+import Toast from './components/Toast';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/trades" element={<TradeHistory />} />
           <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
+        <Toast />
       </div>
     </BrowserRouter>
   );
