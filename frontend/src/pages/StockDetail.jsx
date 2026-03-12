@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchStockBySymbol } from '../api/stocks';
+import OrderForm from '../components/OrderForm';
 
 export default function StockDetail() {
   const { symbol } = useParams();
@@ -31,6 +32,12 @@ export default function StockDetail() {
         <p className="mt-4 text-3xl font-bold text-gray-900">
           ${Number(stock.currentPrice).toFixed(2)}
         </p>
+      </div>
+      <div className="mt-6 max-w-sm">
+        <OrderForm
+          symbol={stock.symbol}
+          currentPrice={stock.currentPrice}
+        />
       </div>
     </div>
   );
