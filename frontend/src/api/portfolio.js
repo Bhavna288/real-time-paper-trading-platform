@@ -5,3 +5,9 @@ export async function fetchPortfolio() {
   if (!res.ok) throw new Error('Failed to fetch portfolio');
   return res.json();
 }
+
+export async function fetchBalance() {
+  const res = await fetch(`/api/users/${DEMO_USER_ID}/balance`);
+  if (!res.ok) throw new Error('Failed to fetch balance');
+  return res.json();
+}

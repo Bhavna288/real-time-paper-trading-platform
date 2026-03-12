@@ -1,24 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchPortfolio } from '../api/portfolio';
+import { fetchBalance } from '../api/portfolio';
+import { fetchHoldings } from '../api/holdings';
 
 export default function Portfolio() {
-  const [portfolio, setPortfolio] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [holdings, setHoldings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchPortfolio()
-      .then(setPortfolio)
+    Promise.all([fetchBalance(), fetchHoldings()])
+      .then(([bal, h]) => {
+        setBalance(bal);
+        setHoldings(h);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <p className="p-6 text-gray-600">Loading portfolio...</p>;
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
-  if (!portfolio) return null;
+  if (!balance) return null;
 
-  const { cashBalance, totalHoldingsValue, totalPortfolioValue, unrealizedPnl, holdings } = portfolio;
+  const cashBalance = balance.cashBalance;
+  const totalHoldingsValue = holdings.reduce((sum, h) => sum + h.marketValue, 0);
+  const totalPortfolioValue = cashBalance + totalHoldingsValue;
+  const unrealizedPnl = holdings.reduce((sum, h) => sum + h.pnl, 0);
 
   return (
     <div className="p-6">
@@ -40,7 +48,7 @@ export default function Portfolio() {
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">Unrealized P&amp;L</p>
           <p className={`text-xl font-semibold ${unrealizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            ${unrealizedPnl >= 0 ? '' : '-'}${Math.abs(unrealizedPnl).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {unrealizedPnl >= 0 ? '$' : '-$'}{Math.abs(unrealizedPnl).toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </p>
         </div>
       </div>
@@ -74,7 +82,7 @@ export default function Portfolio() {
                   <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">${h.currentPrice.toFixed(2)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-right text-gray-900">${h.marketValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                   <td className={`whitespace-nowrap px-4 py-3 text-right font-medium ${h.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ${h.pnl >= 0 ? '' : '-'}${Math.abs(h.pnl).toFixed(2)}
+                    {h.pnl >= 0 ? '$' : '-$'}{Math.abs(h.pnl).toFixed(2)}
                   </td>
                 </tr>
               ))}
