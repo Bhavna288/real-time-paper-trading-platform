@@ -47,7 +47,7 @@ async function getOrderbookBySymbol(symbol) {
   return getOrderbook(stock);
 }
 
-const RANGE_DAYS = { '1d': 1, '1w': 7, '3m': 90 };
+const RANGE_DAYS = { '1d': 1, '1w': 7, '3m': 90, '1y': 365 };
 const MAX_POINTS = 500;
 
 async function getPriceHistory(symbol, range) {
