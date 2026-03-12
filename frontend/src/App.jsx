@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import StockDetail from './pages/StockDetail';
 import Portfolio from './pages/Portfolio';
+import Watchlist from './pages/Watchlist';
 
 function App() {
   return (
@@ -18,11 +19,15 @@ function App() {
             <Link to="/portfolio" className="text-sm text-gray-600 hover:text-gray-900">
               Portfolio
             </Link>
+            <Link to="/watchlist" className="text-sm text-gray-600 hover:text-gray-900">
+              Watchlist
+            </Link>
           </div>
         </nav>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
       </div>
