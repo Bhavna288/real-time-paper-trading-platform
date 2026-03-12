@@ -38,7 +38,7 @@ export default function LivePriceChart({ data }) {
             formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Price']}
             labelFormatter={formatTime}
           />
-          <Line type="monotone" dataKey="price" stroke="#2563eb" strokeWidth={2} dot={false} />
+          <Line type="linear" dataKey="price" stroke="#2563eb" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
