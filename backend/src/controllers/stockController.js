@@ -49,9 +49,24 @@ async function getStockTrades(req, res) {
   }
 }
 
+async function getPriceHistory(req, res) {
+  try {
+    const { symbol } = req.params;
+    const range = req.query.range || '1w';
+    const points = await stockService.getPriceHistory(symbol, range);
+    if (points === null) {
+      return res.status(404).json({ error: 'Stock not found' });
+    }
+    res.json(points);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch price history' });
+  }
+}
+
 module.exports = {
   getStocks,
   getStockBySymbol,
   getOrderbook,
   getStockTrades,
+  getPriceHistory,
 };

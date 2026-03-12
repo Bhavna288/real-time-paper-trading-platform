@@ -47,8 +47,35 @@ async function getOrderbookBySymbol(symbol) {
   return getOrderbook(stock);
 }
 
+const RANGE_DAYS = { '1d': 1, '1w': 7, '3m': 90 };
+const MAX_POINTS = 500;
+
+async function getPriceHistory(symbol, range) {
+  const stock = await prisma.stock.findUnique({
+    where: { symbol: symbol.toUpperCase() },
+  });
+  if (!stock) return null;
+
+  const days = RANGE_DAYS[range] ?? 7;
+  const from = new Date();
+  from.setDate(from.getDate() - days);
+
+  const rows = await prisma.stockPrice.findMany({
+    where: { stockId: stock.id, timestamp: { gte: from } },
+    orderBy: { timestamp: 'asc' },
+  });
+
+  let points = rows.map((r) => ({ time: r.timestamp.getTime(), price: Number(r.price) }));
+  if (points.length > MAX_POINTS) {
+    const step = Math.ceil(points.length / MAX_POINTS);
+    points = points.filter((_, i) => i % step === 0);
+  }
+  return points;
+}
+
 module.exports = {
   getAllStocks,
   getStockBySymbol,
   getOrderbookBySymbol,
+  getPriceHistory,
 };

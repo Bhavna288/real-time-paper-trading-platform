@@ -1,11 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchStockBySymbol } from '../api/stocks';
+import { fetchStockBySymbol, fetchPriceHistory } from '../api/stocks';
 import OrderForm from '../components/OrderForm';
 import LivePriceChart from '../components/LivePriceChart';
 import { useSocket } from '../context/SocketContext';
 
 const MAX_CHART_POINTS = 60;
+const CHART_RANGES = [
+  { value: 'live', label: 'Live' },
+  { value: '1d', label: '1D' },
+  { value: '1w', label: '1W' },
+  { value: '3m', label: '3M' },
+];
 
 export default function StockDetail() {
   const { symbol } = useParams();
@@ -13,6 +19,9 @@ export default function StockDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [priceHistory, setPriceHistory] = useState([]);
+  const [chartRange, setChartRange] = useState('live');
+  const [historicalData, setHistoricalData] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const { priceUpdates } = useSocket();
 
   const livePrice = useMemo(() => {
@@ -42,6 +51,21 @@ export default function StockDetail() {
     setPriceHistory([]);
   }, [symbol]);
 
+  useEffect(() => {
+    if (!symbol || chartRange === 'live') {
+      setHistoricalData([]);
+      return;
+    }
+    setHistoryLoading(true);
+    fetchPriceHistory(symbol, chartRange)
+      .then(setHistoricalData)
+      .catch(() => setHistoricalData([]))
+      .finally(() => setHistoryLoading(false));
+  }, [symbol, chartRange]);
+
+  const chartData = chartRange === 'live' ? priceHistory : historicalData;
+  const chartTitle = chartRange === 'live' ? 'Live price' : CHART_RANGES.find((r) => r.value === chartRange)?.label ?? 'Price';
+
   if (loading) return <p className="p-6 text-gray-600">Loading...</p>;
   if (error) return <p className="p-6 text-red-600">Error: {error}</p>;
   if (!stock) return null;
@@ -58,7 +82,31 @@ export default function StockDetail() {
           ${Number(displayPrice).toFixed(2)}
         </p>
       </div>
-      <LivePriceChart data={priceHistory} />
+      <div className="mt-4 flex gap-2">
+        {CHART_RANGES.map((r) => (
+          <button
+            key={r.value}
+            type="button"
+            onClick={() => setChartRange(r.value)}
+            className={`rounded px-3 py-1.5 text-sm font-medium ${
+              chartRange === r.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+      {chartRange === 'live' ? (
+        <LivePriceChart data={chartData} title={chartTitle} />
+      ) : historyLoading ? (
+        <p className="mt-4 text-gray-500">Loading chart...</p>
+      ) : chartData.length === 0 ? (
+        <p className="mt-4 text-gray-500">No historical data for this range.</p>
+      ) : (
+        <LivePriceChart data={chartData} title={chartTitle} />
+      )}
       <div className="mt-6 max-w-sm">
         <OrderForm
           symbol={stock.symbol}
