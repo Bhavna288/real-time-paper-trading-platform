@@ -5,7 +5,16 @@ async function getWatchlist(userId) {
     where: { userId },
     orderBy: { createdAt: 'asc' },
   });
-  return items.map((item) => ({ symbol: item.symbol, id: item.id }));
+  if (items.length === 0) return [];
+  const stocks = await prisma.stock.findMany({
+    where: { symbol: { in: items.map((i) => i.symbol) } },
+  });
+  const priceBySymbol = Object.fromEntries(stocks.map((s) => [s.symbol, Number(s.currentPrice)]));
+  return items.map((item) => ({
+    id: item.id,
+    symbol: item.symbol,
+    currentPrice: priceBySymbol[item.symbol] ?? null,
+  }));
 }
 
 async function addToWatchlist(userId, symbol) {

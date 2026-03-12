@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchWatchlist, addToWatchlist, removeFromWatchlist } from '../api/watchlist';
+import { useSocket } from '../context/SocketContext';
 
 const SYMBOLS = ['AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN'];
 
@@ -10,6 +11,11 @@ export default function Watchlist() {
   const [error, setError] = useState(null);
   const [addSymbol, setAddSymbol] = useState('');
   const [addError, setAddError] = useState(null);
+  const { priceUpdates } = useSocket();
+
+  const priceBySymbol = useMemo(() => {
+    return Object.fromEntries(priceUpdates.map((p) => [p.symbol, p.currentPrice]));
+  }, [priceUpdates]);
 
   function loadWatchlist() {
     setLoading(true);
@@ -81,25 +87,38 @@ export default function Watchlist() {
       {items.length === 0 ? (
         <p className="rounded-lg border border-gray-200 bg-white p-4 text-gray-500">No symbols in watchlist. Add one above.</p>
       ) : (
-        <ul className="space-y-2">
-          {items.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3"
-            >
-              <Link to={`/stocks/${item.symbol}`} className="font-medium text-blue-600 hover:underline">
-                {item.symbol}
-              </Link>
-              <button
-                type="button"
-                onClick={() => handleRemove(item.symbol)}
-                className="text-sm text-red-600 hover:underline"
+        <>
+          <div className="mb-1 flex items-center justify-between rounded-t border border-b-0 border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-600">
+            <span>Symbol</span>
+            <span>Price</span>
+            <span className="w-14" aria-hidden />
+          </div>
+          <ul className="space-y-2">
+          {items.map((item) => {
+            const price = priceBySymbol[item.symbol] ?? item.currentPrice;
+            return (
+              <li
+                key={item.id}
+                className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3"
               >
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
+                <Link to={`/stocks/${item.symbol}`} className="font-medium text-blue-600 hover:underline">
+                  {item.symbol}
+                </Link>
+                <span className="text-gray-700 tabular-nums">
+                  {price != null ? `$${Number(price).toFixed(2)}` : '—'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRemove(item.symbol)}
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
+              </li>
+            );
+          })}
+          </ul>
+        </>
       )}
     </div>
   );
