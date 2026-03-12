@@ -60,6 +60,21 @@ async function getPriceHistory(symbol, range) {
   const from = new Date();
   from.setDate(from.getDate() - days);
 
+  if (range === '1y') {
+    const fromDate = new Date(from);
+    fromDate.setUTCHours(0, 0, 0, 0);
+    const rows = await prisma.stockPriceDaily.findMany({
+      where: { stockId: stock.id, date: { gte: fromDate } },
+      orderBy: { date: 'asc' },
+    });
+    let points = rows.map((r) => ({ time: r.date.getTime(), price: Number(r.price) }));
+    if (points.length > MAX_POINTS) {
+      const step = Math.ceil(points.length / MAX_POINTS);
+      points = points.filter((_, i) => i % step === 0);
+    }
+    return points;
+  }
+
   const rows = await prisma.stockPrice.findMany({
     where: { stockId: stock.id, timestamp: { gte: from } },
     orderBy: { timestamp: 'asc' },

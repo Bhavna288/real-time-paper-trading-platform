@@ -2,9 +2,11 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const { prisma } = require('./config/database');
 const { startSimulation } = require('./services/marketSimulationService');
+const { runCondensing } = require('./services/condensingService');
 
 const PORT = process.env.PORT || 3001;
 const SIMULATION_INTERVAL_MS = 5000; // 5 seconds
+const CONDENSING_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 const server = app.listen(PORT, async () => {
   try {
@@ -24,6 +26,12 @@ const server = app.listen(PORT, async () => {
       }
     });
     console.log('Market simulation started (prices update every 5s)');
+
+    await runCondensing();
+    console.log('Condensing job ran (daily price history for 1Y chart)');
+    setInterval(() => {
+      runCondensing().catch((err) => console.error('Condensing job failed:', err.message));
+    }, CONDENSING_INTERVAL_MS);
   } catch (err) {
     console.error('Database connection failed:', err.message);
     process.exit(1);

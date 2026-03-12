@@ -34,6 +34,7 @@ model Stock {
   holdings      Holding[]
   trades        Trade[]
   priceHistory  StockPrice[]
+  dailyPrices   StockPriceDaily[]
 }
 
 model StockPrice {
@@ -45,6 +46,18 @@ model StockPrice {
   stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@index([stockId, timestamp])
+}
+
+model StockPriceDaily {
+  id        String   @id @default(cuid())
+  stockId   String
+  date      DateTime // midnight UTC for the day
+  price     Decimal  @db.Decimal(18, 2)
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, date])
+  @@index([stockId, date])
 }
 
 model Order {
