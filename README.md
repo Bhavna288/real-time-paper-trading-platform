@@ -1,8 +1,8 @@
 # Real-Time Paper Trading Platform
 
-A full-stack simulated paper trading platform. Users can view live simulated stock prices, place buy/sell orders, track portfolio and holdings, maintain a watchlist, and view trade history.
+A full-stack simulated paper trading platform. View live simulated stock prices, place market/limit/stop orders, track portfolio and holdings, maintain a watchlist with live prices, set price alerts, and view order and trade history.
 
-**Tech stack:** React (frontend), Node.js + Express (backend), PostgreSQL + Prisma, Socket.io (real-time), Recharts, Tailwind CSS.
+**Tech stack:** React (Vite), Node.js + Express, PostgreSQL + Prisma, Socket.io (real-time), Recharts, Tailwind CSS.
 
 ---
 
@@ -68,10 +68,10 @@ You should see: `Seeded demo user: demo-user-id` and `Seeded 5 stocks: AAPL, MSF
 
 ```bash
 cd backend
-npm start
+npm run dev
 ```
 
-Server runs at **http://localhost:3001**. Check: `curl http://localhost:3001/api/health`
+Server runs at **http://localhost:3001**. Use `npm run dev` for development (nodemon); use `npm start` for production.
 
 **Terminal 2 – Frontend**
 
@@ -104,19 +104,24 @@ The app uses a single seeded demo user:
 
 ## Features
 
-- **Dashboard** – List of stocks (symbol, name, price) with links to detail
-- **Stock detail** – Price and order form (buy/sell)
-- **Portfolio** – Cash balance, holdings value, total portfolio value, unrealized P&amp;L, holdings table
-- **Watchlist** – Add/remove symbols (AAPL, MSFT, NVDA, TSLA, AMZN)
-- **Orders** – Place buy/sell orders at current simulated price; portfolio and holdings update
-- **Real-time** – Live price updates on Dashboard and Stock Detail via WebSockets; trade notifications when orders fill
+- **Dashboard** – Portfolio summary (total value, unrealized P&amp;L), watchlist preview, recent trades, and full market table with live prices
+- **Stock detail** – Live price, price chart (Live / 1D / 1W / 3M / 1Y), order form, order book, and recent trades for that symbol
+- **Orders** – **Market** (immediate fill), **Limit** (fill when price reaches your limit), **Stop** (trigger a market order when price hits your stop; e.g. stop loss = Sell + Stop). Pending limit/stop orders are checked every simulation step and fill when conditions are met
+- **Order history** – List of all orders with kind (Market/Limit/Stop), status (PENDING/FILLED), and trigger/execution price
+- **Portfolio** – Cash balance, holdings value, total portfolio value, unrealized P&amp;L, holdings table with live prices
+- **Watchlist** – Add/remove symbols with live prices; dashboard shows a preview
+- **Trade history** – List of filled trades
+- **Price alerts** – Notify when a stock goes above or below a target price; alerts trigger once and show a toast
+- **Real-time** – Live prices via WebSockets; toasts for order fills and price alerts
 
 ---
 
 ## Real-time (WebSockets)
 
-- **Market simulation** – The backend runs a simulation every 5 seconds that updates each stock’s price by a small random amount (±0.5%). Prices are stored in the database.
+- **Market simulation** – Every 5 seconds the backend updates each stock’s price by a small random amount (±0.5%). Prices are stored; raw ticks are kept for 90 days. A **condensing job** runs on startup and every 6 hours, aggregating raw prices into daily rows so the 1Y chart can show up to a year of history.
+- **Limit/stop orders** – Pending limit and stop orders are evaluated after each price update. When the price crosses the limit or stop level and the user has sufficient balance/holdings, the order fills and a trade is created.
 - **Socket.io** – The server emits:
-  - **`price_update`** – After each simulation step (payload: array of `{ symbol, currentPrice }`). The frontend listens and updates prices on the Dashboard and Stock Detail pages without refresh.
-  - **`trade_update`** – When an order is filled (payload: order summary). The frontend receives it in `SocketContext` (e.g. for toasts or a live trade feed).
-- The frontend connects to the same origin in dev; Vite proxies `/socket.io` to the backend.
+  - **`price_update`** – After each simulation step (array of `{ symbol, currentPrice }`).
+  - **`trade_update`** – When an order is filled (market or triggered limit/stop).
+  - **`price_alert`** – When a price alert condition is met (e.g. stock reached target).
+- The frontend connects to the same origin in dev; Vite proxies `/api` and `/socket.io` to the backend.
