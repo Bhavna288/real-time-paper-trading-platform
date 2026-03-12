@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import StockDetail from './pages/StockDetail';
+import Portfolio from './pages/Portfolio';
 
 function App() {
   return (
@@ -13,11 +15,15 @@ function App() {
             <Link to="/" className="text-sm text-gray-600 hover:text-gray-900">
               Dashboard
             </Link>
+            <Link to="/portfolio" className="text-sm text-gray-600 hover:text-gray-900">
+              Portfolio
+            </Link>
           </div>
         </nav>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/stocks/:symbol" element={<div className="p-6">Stock detail — coming soon</div>} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/stocks/:symbol" element={<StockDetail />} />
         </Routes>
       </div>
     </BrowserRouter>
