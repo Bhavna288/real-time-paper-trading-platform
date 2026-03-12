@@ -1,4 +1,5 @@
 const stockService = require('../services/stockService');
+const tradeService = require('../services/tradeService');
 
 async function getStocks(req, res) {
   try {
@@ -35,8 +36,22 @@ async function getOrderbook(req, res) {
   }
 }
 
+async function getStockTrades(req, res) {
+  try {
+    const { symbol } = req.params;
+    const trades = await tradeService.getTradesByStock(symbol);
+    if (trades === null) {
+      return res.status(404).json({ error: 'Stock not found' });
+    }
+    res.json(trades);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch trades' });
+  }
+}
+
 module.exports = {
   getStocks,
   getStockBySymbol,
   getOrderbook,
+  getStockTrades,
 };
